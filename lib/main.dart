@@ -31,10 +31,14 @@ class TicTacToePage extends StatefulWidget {
 
 class _TicTacToePageState extends State<TicTacToePage> {
   int _counter = 0;
+  final _squares = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '];
 
-  void _incrementCounter() {
+
+
+  void _incrementCounter(int id, String c) {
     setState(() {
       _counter++;
+      _squares[id] = c;
     });
   }
 
@@ -66,14 +70,14 @@ class _TicTacToePageState extends State<TicTacToePage> {
             Text(
               _statusText(),
               style: const TextStyle(
-                fontSize: 36,          // Adjust the font size
+                fontSize: 36, // Adjust the font size
                 fontWeight: FontWeight.bold, // Use a bold font weight
-                color: Colors.white,   // Set the text color
+                color: Colors.white, // Set the text color
                 shadows: [
                   Shadow(
                     color: Colors.grey, // Shadow color
                     offset: Offset(2, 2), // Shadow offset
-                    blurRadius: 5,       // Shadow blur radius
+                    blurRadius: 5, // Shadow blur radius
                   ),
                 ],
               ),
@@ -82,25 +86,25 @@ class _TicTacToePageState extends State<TicTacToePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _buildSquare(),
-                _buildSquare(),
-                _buildSquare(),
+                _buildSquare(0),
+                _buildSquare(1),
+                _buildSquare(2),
               ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _buildSquare(),
-                _buildSquare(),
-                _buildSquare(),
+                _buildSquare(3),
+                _buildSquare(4),
+                _buildSquare(5),
               ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _buildSquare(),
-                _buildSquare(),
-                _buildSquare(),
+                _buildSquare(6),
+                _buildSquare(7),
+                _buildSquare(8),
               ],
             ),
           ],
@@ -109,29 +113,35 @@ class _TicTacToePageState extends State<TicTacToePage> {
     );
   }
 
-  Widget _buildSquare() {
+  Widget _buildSquare(int id) {
     return Padding(
       padding: const EdgeInsets.all(1.0),
       child: ElevatedButton(
-        onPressed: () {
-          // Add your button tap logic here
-        },
+        onPressed: () =>_onMove(id),
         style: ElevatedButton.styleFrom(
           foregroundColor: Colors.black,
-          backgroundColor: Colors.white.withOpacity(0.3),
-          shadowColor: Colors.yellow,
+          backgroundColor: Colors.white.withOpacity(0.6),
           padding: const EdgeInsets.all(16),
           textStyle: const TextStyle(fontSize: 36),
           shape: const RoundedRectangleBorder(
             side: BorderSide(color: Colors.black),
           ),
         ),
-        child: const Text('O'), // Replace with 'O' or '' as needed
+        child: Text(_squares[id]), // Replace with 'O' or '' as needed
       ),
     );
   }
 
-  void _onMove() {}
+  void _onMove(int id) {
+    print(id);
+    print(_squares);
+    print(_counter);
+    if (_squares[id] == ' ') {
+      _incrementCounter(id, _counter % 2 == 0 ? 'O' : 'X');
+
+    }
+    print(_squares);
+  }
 
   String _statusText() {
     return "Please Begin";
