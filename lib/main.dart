@@ -31,15 +31,50 @@ class TicTacToePage extends StatefulWidget {
 
 class _TicTacToePageState extends State<TicTacToePage> {
   int _counter = 0;
-  final _squares = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '];
+  var _squares = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '];
+  var _winner = ' ';
 
+  final _winningCombos = [
+    // rows
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    // columns
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    // diagonals
+    [0, 4, 8],
+    [6, 4, 2],
+  ];
 
-
-  void _incrementCounter(int id, String c) {
+  void _updateState(int id, String c) {
     setState(() {
       _counter++;
       _squares[id] = c;
+      _winner = _checkForWin();
     });
+  }
+
+  void _resetState() {
+    setState(() {
+      _counter = 0;
+      _squares = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '];
+      _winner = ' ';
+    });
+  }
+
+  String _checkForWin() {
+    var rc = ' ';
+    for (int i = 0; i < _winningCombos.length; i++) {
+      if (_squares[_winningCombos[i][0]] != ' ' &&
+          _squares[_winningCombos[i][0]] == _squares[_winningCombos[i][1]] &&
+          _squares[_winningCombos[i][0]] == _squares[_winningCombos[i][2]]) {
+        rc = _squares[_winningCombos[i][0]];
+        break;
+      }
+    }
+    return rc;
   }
 
   @override
@@ -57,8 +92,6 @@ class _TicTacToePageState extends State<TicTacToePage> {
         title: Text(widget.title),
       ),
       body: Container(
-        width: double.maxFinite,
-        height: double.maxFinite,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [Colors.red, Colors.orange],
@@ -107,6 +140,7 @@ class _TicTacToePageState extends State<TicTacToePage> {
                 _buildSquare(8),
               ],
             ),
+            _buildResetButton(),
           ],
         ),
       ),
@@ -115,9 +149,9 @@ class _TicTacToePageState extends State<TicTacToePage> {
 
   Widget _buildSquare(int id) {
     return Padding(
-      padding: const EdgeInsets.all(1.0),
+      padding: const EdgeInsets.all(5.0),
       child: ElevatedButton(
-        onPressed: () =>_onMove(id),
+        onPressed: () => _onMove(id),
         style: ElevatedButton.styleFrom(
           foregroundColor: Colors.black,
           backgroundColor: Colors.white.withOpacity(0.6),
@@ -133,17 +167,30 @@ class _TicTacToePageState extends State<TicTacToePage> {
   }
 
   void _onMove(int id) {
-    print(id);
-    print(_squares);
-    print(_counter);
-    if (_squares[id] == ' ') {
-      _incrementCounter(id, _counter % 2 == 0 ? 'O' : 'X');
-
+    if (_squares[id] == ' ' && _winner == ' ') {
+      _updateState(id, _counter % 2 == 0 ? 'O' : 'X');
     }
-    print(_squares);
   }
 
   String _statusText() {
-    return "Please Begin";
+    var status = _counter == 0
+        ? "'O' goes first"
+        : (_counter % 2 == 0 ? "Next turn: 'O'" : "Next turn: 'X'");
+    if (_winner != ' ') {
+      status = "'$_winner' Wins!";
+    } else if (_counter == 9) {
+      status = "Cat's Game";
+    }
+    return status;
+  }
+
+  Widget _buildResetButton() {
+    return Visibility(
+      visible: _counter == 9 || _winner != ' ',
+      child: ElevatedButton(
+        onPressed: _resetState,
+        child: const Text("New Game"),
+      ),
+    );
   }
 }
